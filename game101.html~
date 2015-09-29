@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <script src="pixi.dev.js" type="text/javascript"></script>
+    <script src="http://js.leapmotion.com/leap-0.4.2.js"></script>
+
+    <style type="text/css">
+     #playground{
+			height: 530px;
+			width: 1350px;
+		}
+     #score {
+		margin-top:  0px;
+		margin-left: 600px;
+	        height: 20px;
+	}
+    </style>
+
+  </head>
+  <body>
+    <p id="score" style = "color: red; font-size: 40px;"></p>
+    <div id="playground"></div>
+    
+  </body>
+
+  <script type="text/javascript">
+
+    var width = 1350;
+    var height = 530;
+
+    
+    var stage = new PIXI.Stage(0xFFFFFF);
+    var render = new PIXI.autoDetectRenderer(width, height);
+    document.getElementById("playground").appendChild(render.view);
+
+    //Creating the background
+    var spacebg = PIXI.Texture.fromImage("spacebg.png");
+    var space = new PIXI.TilingSprite(spacebg, width, height);
+    stage.addChild(space);
+
+    // Create the rocket also
+    var rocket = PIXI.Sprite.fromImage("rocketship.png");
+    stage.addChild(rocket);
+
+    
+   //Conditions for game over on collision
+    var collision = false;
+    var score = 0;
+/*function increment(){
+    if(!collision){
+	score++;
+	}
+}*/
+
+var value = 0;
+var increment = 1;
+
+/*function PerformCalc()
+{
+  value += increment;
+
+ 
+ document.getElementById('score').innerHTML = 'Score: ' + value;
+}
+setInterval(PerformCalc, 1000);
+*/    
+
+   //Initial Time conditions
+    var timer = window.performance.now();
+
+    var options = {frameEventName: "animationFrame"};
+    var controller = Leap.loop(options, function(frame) {
+//Now, if simple animation is used, it will depend on frame rate. To avoid that, make use of current time wrt to initial time and update the 
+//initial time to new time periodically say 100ms
+      var now = window.performance.now();
+      var rate = Math.min(now - timer, 100);
+      timer = now;
+      /*function increment(){
+      	if(!collision){
+		score++;
+	}
+}
+*/
+
+	/*function PerformCalc()
+	{
+  		value += increment;
+		if(collision) 
+			return;
+		document.getElementById('score').innerHTML = 'Score: ' + value;
+	}
+	setInterval(PerformCalc, 1000);
+*/
+
+
+
+
+     space.tilePosition.x -= 0.3 * rate;   //Moving the background
+
+      if (collision) {
+        
+        var message = new PIXI.Text("Game Over :/ Please refresh to start again!", {font: "40px Helvetica", fill: "red"});
+
+        message.x = width / 2-350;
+        message.y = height / 2 + 200;
+
+        stage.addChild(message);
+
+       //Now when game is over, the background and spaceships should become static..hence call the function and render containingthe message
+        return render.render(stage);
+      }
+
+     //Now enemy ships features
+      space.children.forEach(function(child) {
+        child.x -= 0.3 * rate;
+
+       //Condition of collision is rocket getting in bounds of the enemy ship...this logic for collision can be improved!
+        if (child.getBounds().contains(rocket.x, rocket.y))
+          collision = true;
+
+        // Remove enemy ships that have gone off the edge of the screen
+        if (child.x < -child.width)
+          space.removeChild(child);
+      });
+      // Find the ship that was most recently added to the stage
+      var lastship = space.children[space.children.length - 1];
+
+      //Condition of adding enemy ships on screen - Distance between two enemy ships should not be more than 250 px! found out wrt to X co-
+//ordinate of last ship towards right on screen
+      if (space.children.length == 0 || lastship.x < (width - 250)) {
+        var enemynew = PIXI.Sprite.fromImage("enemy.png");
+        enemynew.y = Math.floor((Math.random() * (height)));
+        enemynew.x = width;
+        space.addChild(enemynew);
+      }
+
+      if (frame.pointables.length > 0) {
+        var pos = frame.pointables[0].stabilizedTipPosition;
+        var normPos = frame.interactionBox.normalizePoint(pos, true);
+
+        rocket.x = width * normPos[0];
+        rocket.y = height * (1 - normPos[1]);
+      }
+
+      // Render the scene
+      render.render(stage);
+    });
+
+	function PerformCalc()
+	{
+  		value += increment;
+		if(collision) 
+			return;
+		document.getElementById('score').innerHTML = 'Score: ' + value;
+	}
+	setInterval(PerformCalc, 1000);
+
+  </script>
+</html>

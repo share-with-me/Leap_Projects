@@ -1,0 +1,102 @@
+<html>
+<head>
+	<title>Game</title>
+	<script src="pixi.dev.js" type="text/javascript"></script>
+        <script src="http://js.leapmotion.com/leap-0.4.2.js"></script>
+	<style>
+		#playground{
+			height: 600px;
+			width: 1300px;
+		}
+	</style>
+</head>
+<body>
+<div id = "playground"></div>
+</body>
+
+<script type = "text/javascript">
+	var height = 600;
+	var width = 1300;
+	
+	var space = new PIXI.Stage(0xFFFFFF);
+	var render = new PIXI.autoDetectRenderer(width, height,{view: document.getElementById("playground")});
+	//document.getElementById("playground").appendChild(render.view);
+	
+
+	//Creating the background
+	var spacebg = PIXI.Texture.fromImage("spacebg.png");
+	var spacefull = new PIXI.TilingSprite(spacebg, width, height);
+	space.addChild(spacefull);
+
+	//Rocket also
+	var rocket = PIXI.Sprite.fromImage("rocketship.png");
+	space.addChild(rocket);
+
+	//Conditions for game over on collision
+
+	var collision = false;
+	
+	//Initial Time conditions
+	var time = window.performance.now();
+	var opt = {frameEventName: "animationFrame"};
+	var controller = Leap.loop(opt, function(frame){
+		//Now, if simple animation is used, it will depend on frame rate. To avoid that, make use of current time wrt to initial time and update the initial time to new time periodically say 100ms
+	var timenow = window.performance.now();
+	var rate = Math.min(timenow-time, 100);
+	time = timenow;
+	
+	spacefull.tilePosition.x -= 0.3*rate; //Moving the background
+
+	if(collision){
+		var message = new PIXI.Text("Game Over :/, Refresh to start a new game!", {font: "30px", fill: red;});
+	
+		message.x = width/2;
+		message.y = height/2;
+		
+		//Now when game is over, the background and spaceships should become static..hence call the function and render only the frame containing the message
+
+	space.addChild(message);
+	return render.render(space);
+}
+	//Now enemy ships features
+	spacefull.children.forEach(function(child){
+		child.x -= 0.3*rate;
+
+	//Condition of collision is rocket getting in bounds of the enemy ship...this logic for collision can be improved!
+	if(child.getBounds().contains(rocket.x, rocket.y))
+		collision = true;
+	//Conditions when new ships to be added on screen or removed from screen
+	if(child.x < -child.width)
+		spacefull.removeChild(child);
+
+});
+	//Condition of adding enemy ships on screen - Distance between two enemy ships should not be more than 200 px! found out wrt to X co-ordinate of last ship towards right on screen
+	var lastship = spacefull.children[spacefull.children.length - 1];
+	
+	if( spacefull.children.length == 0 || lastship.x < (width - 200))
+	{
+		var enemynew = PIXI.Sprite.fromImage("enemy.png");
+		enemynew.x = width;
+		enemynew.y = Math.floor((Math.random() * (height - 200)));
+		spacefull.addChild(enemynew);
+	}
+	
+	
+	
+	if (frame.pointables.length > 0) {
+        // Get the normalized finger position
+        var pos = frame.pointables[0].stabilizedTipPosition;
+        var normPos = frame.interactionBox.normalizePoint(pos, true);
+
+        // Move the rocket to the normalized finger position
+        rocket.x = width * normPos[0];
+        rocket.y = height * (1 - normPos[1]);
+      }
+
+      // Render the scene
+      render.render(space);
+    });
+
+  </script>
+</html>
+	
