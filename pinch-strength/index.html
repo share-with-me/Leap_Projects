@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <title>Detecting Pinch Strength</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r67/three.js"></script>
+    <script src="//js.leapmotion.com/leap-0.6.2.js"></script>
+    <script src="//js.leapmotion.com/leap-plugins-0.1.6.1.js"></script>
+    <script src="//js.leapmotion.com/leap.rigged-hand-0.1.4.min.js"></script>
+
+
+    <style>
+      body{
+        font-family: sans-serif;
+      }
+      #strength{
+        font-size: 50px;
+        color: #244f98;
+        text-align: center;
+        position: fixed;
+        bottom: 100px;
+        margin-left: 500px;
+      }
+
+      #bar{
+        background-color: #244f98;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 40px;
+        width: 0%;
+        
+      }
+		
+    </style>
+
+  </head>
+
+  <body>
+   <div id = "instr" style = "color: #244f98; font-size: 25px; margin-left: 150px;">Put your hand on leap device and press your finger against your thumb to determine pinch strength!</div>
+    <div id="strength"></div>
+    <div id="bar"></div>
+  </body>
+
+  <script type="text/javascript">
+    
+    var strength = document.getElementById('strength'); //Variable to hold strength - float value between 0 and 1
+    var   bar = document.getElementById('bar');		//Variable to hold bar
+
+    
+    Leap.loop( {
+
+        hand: function(hand){
+
+                  strength.innerHTML = "Strength: " + hand.pinchStrength.toPrecision(2); //Detect Stregth using function in API to precision 2
+//be changed
+                  bar.style.width = hand.pinchStrength * 100 + '%'; //Change the width of progressbar as a function of strength
+
+              }
+    });
+
+/*Rest of the code has similar logic as compared to grabStrength problem!*/
+	visualize = function(controller){
+	 
+	
+	  controller.use('playback').on('riggedHand.meshAdded', function(handMesh, leapHand){
+		  handMesh.material.opacity = 1;
+	  });
+	 
+	
+	
+	  controller.use('riggedHand', {
+		scale: 1,
+		boneColors: function (boneMesh, leapHand){
+		  if ((boneMesh.name.indexOf('Finger_') == 0) ) {
+        if ((boneMesh.name.indexOf('Finger_0') == 0) || (boneMesh.name.indexOf('Finger_1') == 0)) {
+          return {
+            hue: 0.564,
+            saturation: leapHand.pinchStrength,
+            lightness: 0.5
+          }
+        }
+		  }
+		}
+	  });
+	  
+    var camera = controller.plugins.riggedHand.camera;
+    camera.position.set(-8,8,20);
+    camera.lookAt(new THREE.Vector3(0,0,0));
+ 
+      checkWebGL: true;
+	};
+	visualize(Leap.loopController);
+  </script>
+</html>
