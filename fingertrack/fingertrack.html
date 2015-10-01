@@ -1,0 +1,32 @@
+<html>
+<head>
+	
+	<script src = "http://js.leapmotion.com/leap-0.4.2.js"></script>
+	<style>
+	#head{
+		height: 30px;
+		width: 30px;
+		background-color: red;
+		position: absolute;
+	}
+	</style>
+</head>
+<body>
+	<div id = "head"></div>
+</body>
+<script type = "text/javascript">
+	Leap.loop(function(frame) {
+		if(frame.pointables.length > 0)
+		{
+			var position = frame.pointables[0].stabilizedTipPosition;
+			var normalposition = frame.interactionBox.normalizePoint(position);
+
+			var track = document.getElementById("head");
+			track.style.left = window.innerWidth * normalposition[0];
+			track.style.top = window.innerHeight * (1-normalposition[1]);
+		}
+	});
+</script>
+	
+</html>
+	
