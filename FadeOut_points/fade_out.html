@@ -1,0 +1,96 @@
+<!--Using HTML5 canvas features, please refer the docs for canvas usage!-->
+
+<html>
+<head>
+  <title>Fade Out Effect</title>
+  
+  
+<style>
+html, body {
+  width:100%;
+  height:100%;
+  font-family:sans-serif;
+  color:#333;
+}
+
+#myCanvas{
+  display:block;
+}
+
+#coords{
+  position: absolute;
+  top:0;
+  left:0;
+  z-index: 10;
+}
+
+</style>
+</head>
+<body>
+  <p id="coords"></p>
+  <canvas id = "myCanvas"></canvas>
+</body>
+	<script src="lib/leap.min.js"></script>
+	<script type = "text/javascript">
+	(function(){
+  
+  var c = document.getElementById('myCanvas');
+  var ctx = c.getContext('2d');
+  var data = document.getElementById('coords');
+  var radius = 10;
+
+  
+  c.width = document.body.clientWidth;  //Setting up sizes for the canvas
+  c.height = document.body.clientHeight;
+
+  
+  ctx.translate(c.width/2, c.height);
+
+ 
+  ctx.strokeStyle = "rgba(255,255,255,0.5)";//Outer color border to easily understand - last argument thickness for border
+  ctx.lineWidth = 5;
+
+  function make_animate(frame) {
+    
+    var info = [],
+        pos, i, len;
+
+    
+      ctx.fillStyle = "rgba(0,255,0,0.1)"; /*filling the bg with 10% effect of opacity..also can make beautiful creative designs by keeping opacity argument 0 ie. fade out =0 */
+
+
+        /*FillStyle works in foll way-
+        1. Set a style of fill for the target element.
+        2. Define the target element specs and fill it in the above way.
+        3. Redefine and use it again.
+        */
+
+    ctx.fillRect(-c.width/2,-c.height,c.width,c.height);
+
+    // set the fill to black for the points
+    ctx.fillStyle = "rgba(0,0,0,1)"; //filling the points
+
+    // loop over the frame's pointables
+    for (i=0, len=frame.pointables.length; i<len; i++) {
+      
+      pos = frame.pointables[i].tipPosition;
+
+      info.push(pos);   //Adding co-ordinates to our array
+
+
+      ctx.beginPath();
+      ctx.arc(pos.x-radius/2 ,-(pos.y-radius/2),radius,0,2*Math.PI);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    data.innerHTML = info.join(', '); // print out our position points
+  };
+
+  
+  Leap.loop(make_animate);
+})();
+		
+        </script>
+	
+</html>
