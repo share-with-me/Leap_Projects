@@ -1,0 +1,80 @@
+<html>
+<head>
+    <!--Required scripts-->
+    <title>Hand Confidence</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
+    <script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+    <script src="//js.leapmotion.com/leap-plugins-0.1.10.js"></script>
+
+    <script src="//js.leapmotion.com/leap.rigged-hand-0.1.4.min.js"></script>
+
+    <style>
+      body{
+        font-family: sans-serif;
+      }
+      #confidence{
+        font-size: 50px;
+        color: #244f98;
+        text-align: center;
+        position: fixed;
+        bottom: 100px;
+        margin-left: 500px;
+      }
+
+      #bar{
+        background-color: #244f98;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 40px;
+        width: 0%;
+        
+      }
+     </style>
+
+  </head>
+
+  <body>
+    <div id = "instr" style = "color: #244f98; font-size: 25px; margin-left: 200px;">Put your hand on leap device and determine the confidence of hand detection!</div>
+    <div id="confidence"></div>
+    <div id="bar"></div>
+  </body>
+
+  <script type="text/javascript">
+    
+    var confidence = document.getElementById('confidence'); //Variable to hold confidence
+    var   bar = document.getElementById('bar');		//Variable to hold bar
+
+    
+    Leap.loop( {
+
+        hand: function(hand){
+
+                  confidence.innerHTML = hand.confidence.toPrecision(2) + hand.type + "hand"; //Detect confidence using function in API
+                  bar.style.width = hand.confidence * 100 + '%'; //Change the width of progressbar as a function of confidence
+
+              }
+    });
+
+
+	//Adding rigged hand for cool UI
+
+    var	visualize = function(controller){
+      
+      controller.use('playback');
+
+      controller.use('riggedHand', {
+        scale: 1,
+        boneColors: function (boneMesh, leapHand){
+          return {
+            hue: 0.5,
+            saturation: leapHand.confidence,//Detect hand and change its hue and lightness
+            lightness: 0.5
+          }
+        }
+      });
+    }
+    visualize(Leap.loopController); //Call the visualize function
+  </script>
+</html>
+
