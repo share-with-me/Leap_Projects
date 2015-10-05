@@ -1,0 +1,59 @@
+<!--Makes use of proximity alert of leap js, refer docs -->
+<html>
+  <head>
+    <title>Proximity Alert</title>
+    <script src="//js.leapmotion.com/leap-0.4.2.js"></script>
+    <script src="//js.leapmotion.com/leap-plugins-0.1.3.js"></script>
+    <script src="./leap.proximity-alert.js"></script>
+
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 30px;
+	text-align: center;
+      }
+      #leap{
+	margin-top: 75px;
+	}
+      #usage{
+	margin-top: 60px;
+	}
+    </style>
+   
+  </head>
+  <body>
+    <p>
+      Works in browsers that support the <a href="http://caniuse.com/audio-api">Web Audio API</a> Please make sure your broswer dupports that. Click on Web Audio API link to know more and understand its docs!
+    </p>
+
+    <br/>
+    <img id = "leap" src = "leap.png"/>
+    <p id = "usage">
+      <br/>
+      <b>Usage:</b> <a href='#' id="begin">Click to Unmute</a>
+      <br/>Move your hand slowly and carefully above your Leap.  Start from the center, and move out in one direction.  As you near the edge of the Interaction Box, beeping will begin gradually, speeding up until you hit the edge.  Outside of the box, while the hand is in view, a constant beep will sound.
+      <br/>
+      <br/>
+    </p>
+
+  </body>
+   <script>
+     window.onload = function() {	//Execute the function as soon as window loads
+        var beginControl, proximityAlertScope;	//vars
+        proximityAlertScope = {};	//To hold the volume based on proximity 
+
+        (new Leap.Controller)
+          .use('handEntry')
+          .use('proximityAlert', proximityAlertScope)
+          .connect();	//Connect the leap
+
+        beginControl = document.getElementById('begin');	//hold begin id element
+        proximityAlertScope.setVolume(0);	//Set to 0 initially unless clicked
+        return beginControl.onclick = function() {	//If clicked, setvolume acc to proximity
+          proximityAlertScope.setVolume(1);
+          beginControl.innerHTML = "Unmuted";	//Add 'unmuted' to the begin id element
+        };
+     };
+    </script>
+</html>
+
