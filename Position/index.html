@@ -1,0 +1,50 @@
+<!--Uses screen positionjs of leap-->
+<html>
+<head>
+  <style>
+    #cursor {
+      width: 50px;
+      height: 50px;
+      position: fixed;
+      margin-left: 0px;
+      margin-top: 0px;
+      background: black;
+      border-radius: 100%;
+      
+    }
+  </style>
+  <script src="//js.leapmotion.com/leap-0.4.2.js"></script>
+  <script src="leap.screen-position.js"></script>
+</head>
+<body>
+
+<div>
+  <div id="cursor"></div>
+  <div id="output"></div>
+</div>
+
+
+<script>
+  var cursor = document.getElementById('cursor');	//Vars to hold cursor and output
+  var output = document.getElementById('output');
+
+  (new Leap.Controller)
+    .use('screenPosition', {
+      scale: 1
+    })
+    .on('frame', function(frame) {
+      var hand;
+      if (hand = frame.hands[0]) {
+
+        output.innerHTML = ("[&nbsp;&nbsp;" + (hand.screenPosition()[0].toPrecision(4)) +
+                     "        ,&nbsp;&nbsp;" + (hand.screenPosition()[1].toPrecision(4)) +
+                     "        ,&nbsp;&nbsp;" + (hand.screenPosition()[2].toPrecision(4)) + "]");//Holding hand position co-ordinates
+
+        cursor.style.left = hand.screenPosition()[0] + 'px'//Moving cursor wrt to hand movement
+        cursor.style.top = hand.screenPosition()[1] + 'px'
+      }
+  }).connect();
+
+</script>
+</body>
+</html>
