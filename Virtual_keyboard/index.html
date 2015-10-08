@@ -1,0 +1,272 @@
+<html>
+<body>
+
+<script src = "https://js.leapmotion.com/leap-0.6.0-beta1.min.js"></script>
+<script src = "js/three.min.js"></script>
+<script src = "js/ConnectedHand.js"></script>
+	
+<script>
+
+  var container , camera, scene, renderer, text_box,textNode,str;
+
+  var frame, controller;
+
+  var keys;
+  var backspace_key;
+  var sceneSize = 100;
+
+  var leftHand , rightHand;
+
+
+  // Get everything set up
+  init();
+
+  // Start the frames rolling
+  animate();
+
+
+  function makeKey(l,w,h,x,y,z){
+    var cube_geo = new THREE.CubeGeometry(l,w,h);
+    var cube_mat = new THREE.MeshBasicMaterial({color:0xffff00,wireframe: false});//Setting wireframe to false coz full filling is required
+    var cube = new THREE.Mesh(cube_geo,cube_mat);
+    cube.position.y = y;	//Setting up the co-ordinates x,y,z for cube
+    cube.position.x = x;
+    cube.position.z = z;
+    cube.rotation.x=1.0;	//Rotation of cube wrt to front perspective
+    return cube;
+  }
+
+  function init(){
+
+    controller = new Leap.Controller();//initialise controller object
+    controller.connect();
+
+    scene = new THREE.Scene();//initialise the scene instance
+    
+    camera = new THREE.PerspectiveCamera( //refer to perspective camera docs for info about parameters
+      50 ,
+      window.innerWidth / window.innerHeight,
+      sceneSize / 100 ,
+      sceneSize * 4
+    );
+
+    str = '';
+
+    camera.position.z = sceneSize-25;//set z co-ordinate such that all elements can be seen
+    
+    camera.lookAt(new THREE.Vector3(0,-60,-150));//Setting up new lookAt points
+
+    container = document.createElement( 'div' );//Creating a div and setting up its properties
+
+    container.style.width      = '100%';
+    container.style.height     = '100%';
+    container.style.position   = 'absolute';
+    container.style.top        = '0px';
+    container.style.left       = '0px';
+    container.style.background = 'white';
+
+
+    document.body.appendChild( container );//Adding it to document
+
+    text_box = document.createElement('div');//Creating a div to handle the text that is typed
+    text_box.style.width = '100%';
+    text_box.style.height = '70px';
+    text_box.style.position = 'absolute';
+    text_box.style.top = '50px'
+    text_box.style.zIndex = '999';
+    text_box.style['text-align'] = 'center';
+    text_box.style.color = "black";
+    textNode = document.createTextNode('');//Create an empty string text box and append to textbox which in turn is appended to document
+    text_box.appendChild(textNode);
+    document.body.appendChild(text_box);
+
+    // Setting up our Renderer
+    renderer = new THREE.WebGLRenderer();//Set up renderer and set up its properties
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );//Add it to the document
+
+
+
+    leftHand = new ConnectedHand( controller );//Using connectedHand plugin to make a mesh and add it to the scene - left
+    leftHand.addToScene( scene );
+    //leftHand.createMesh();
+
+    rightHand = new ConnectedHand( controller );//Using connectedHand plugin to make a mesh and add it to the scene - right
+    rightHand.addToScene( scene );
+    //rightHand.createMesh();
+
+
+
+
+
+
+    var geo = new THREE.CubeGeometry( 1 , 1 , 1 );
+var mat = new THREE.MeshBasicMaterial({
+  color:0xc0ffee, 
+  transparent:true,
+  opacity:1
+});
+var jointMesh = new THREE.Mesh( geo , mat );
+
+var connectionMesh = new THREE.Mesh( geo , mat );
+
+var centerMesh = new THREE.Mesh( geo , mat );
+centerMesh.scale.x = 5;
+centerMesh.scale.z = 5;
+
+// Here we create new fingers and a Palm with the geometries
+// we have created. This will take care of removing
+// the old default meshes as well
+leftHand.createFingers( jointMesh , connectionMesh );
+leftHand.createPalm( jointMesh , connectionMesh, centerMesh  );
+//leftHand.createMesh();
+
+//rightHand.createMesh();
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    text="QWERTYUIOPASDFGHJKL;ZXCVBNM,./ ";//Text string for the keyboard
+
+    keys = [];//to hold the keys that are generated using makekey function
+
+    for(var i=0;i<10;i++){
+      var key = makeKey(15,5,15,(i-5)*20,-20,-150);//Setting up keys with parameters
+	    scene.add(key);
+	    keys.push(key);
+	}
+   for(var i=0;i<10;i++){
+      var key = makeKey(15,5,15,(i-5)*20,-40,-125);
+      scene.add(key);
+      keys.push(key);
+	}
+	for(var i=0;i<10;i++){
+      var key = makeKey(15,5,15,(i-5)*20,-60,-100);
+      scene.add(key);
+      keys.push(key);
+	}
+
+
+  
+
+  for(var i=0;i<keys.length;i++){//Associating the keys made with the corresponding text
+    var sprite = makeTextSprite(text.charAt(i),{'key':keys[i]});
+    scene.add(sprite);
+  }
+
+  backspace_key = makeKey(50,5,15,30,0,-175);//Make backspace key
+  scene.add(backspace_key);
+  var sprite = makeTextSprite('Backspace',{'key':backspace_key});
+  sprite.position.set(backspace_key.position.x-20,backspace_key.position.y+10,backspace_key.position.z);//Position of the text backspace wrt key
+  scene.add(sprite);
+
+  var space_key = makeKey(50,5,15,0,-70,-75);//Make space key
+    scene.add(space_key);
+    keys.push(space_key);
+    var sprite = makeTextSprite('Space',{'key':space_key});
+    sprite.position.set(space_key.position.x-10,space_key.position.y+10,space_key.position.z+20);//Position of space text wrt key
+  scene.add(sprite);
+  }
+
+
+  function animate(){
+	// Tells us which hand to update with
+    leftHand.update( 'left' );
+    rightHand.update( 'right' );
+
+    for(var i=0;i<keys.length;i++){
+      var prev = keys[i].pressed;
+    	keys[i].pressed = false;
+	    leftHand.onTouch(keys[i]);
+	    rightHand.onTouch(keys[i]);
+	    if(keys[i].pressed){
+	      keys[i].material.color.setHex(0x00ffff);
+	    }else {
+        if(prev){
+          str+=text.charAt(i);
+          textNode.nodeValue = str;
+        }
+	      keys[i].material.color.setHex(0x000000);
+	    }
+	 }
+
+   var prev = backspace_key.pressed;
+      backspace_key.pressed = false;
+      leftHand.onTouch(backspace_key);
+      rightHand.onTouch(backspace_key);
+      if(backspace_key.pressed){
+        backspace_key.material.color.setHex(0x00ffff);
+      }else {
+        if(prev){
+          if(str.length>0){
+            str = str.substr(0,str.length-1);
+            textNode.nodeValue = str;
+          }
+        }
+        backspace_key.material.color.setHex(0x000000);
+      }
+
+    renderer.render( scene , camera );//render the scene
+
+    requestAnimationFrame( animate );
+
+  }
+//Defining the makeTextSprite function
+  function makeTextSprite( message, parameters )
+{
+
+  var fontface = parameters.hasOwnProperty("fontface") ? //Setting up default values in case the parameteers are not given
+    parameters["fontface"] : "Arial";
+  
+  var fontsize = parameters.hasOwnProperty("fontsize") ? 
+    parameters["fontsize"] : 18;
+  
+  var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+    parameters["borderThickness"] : 4;
+  
+  var borderColor = parameters.hasOwnProperty("borderColor") ?
+    parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+  
+  var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+    parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+
+  var spriteAlignment = THREE.SpriteAlignment.topLeft;
+    
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  context.font = "Bold " + fontsize + "px " + fontface;//Font styles for text in canvas
+
+  
+  // text color
+  context.fillStyle = "rgba(255, 255, 255, 1.0)";//text style
+
+  context.fillText( message, borderThickness, fontsize + borderThickness);
+  
+  // canvas contents will be used for a texture
+  var texture = new THREE.Texture(canvas) 
+  texture.needsUpdate = true;
+
+  var spriteMaterial = new THREE.SpriteMaterial( 
+    { map: texture, useScreenCoordinates: false, alignment: spriteAlignment } );
+  var sprite = new THREE.Sprite( spriteMaterial );
+  sprite.scale.set(75,50,1.0);//x,y and scale factor
+
+  var key = parameters['key'];
+
+  sprite.position.set(key.position.x,key.position.y+10,key.position.z);//default position of sprite words wrt key
+
+  return sprite;  
+}
+</script>
+</body>
+</html>
