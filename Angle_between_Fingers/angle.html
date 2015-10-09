@@ -1,0 +1,88 @@
+<!--Shows the angle between index finger and middle finger of a hand in degrees-->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Finger Angle</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r67/three.js"></script>
+    <script src="//js.leapmotion.com/leap-0.6.2.js"></script>
+    <script src="//js.leapmotion.com/leap-plugins-0.1.6.1.js"></script>
+    <script src="//js.leapmotion.com/leap.rigged-hand-0.1.4.min.js"></script>
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <style>
+	body{
+	font-family: sans-serif;
+	}
+	#degree{
+	font-size: 50px;
+	color: black;
+	/*text-align: center;*/
+	}
+	#bar{
+	background: black;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 30px;
+        width: 0%;
+	}
+    </style>
+
+<body>
+<div id = "degree"></div>
+<div id = "bar"></div>
+
+
+</body>
+
+<script type = "text/javascript">
+	var degree = document.getElementById("degree");
+	var bar = document.getElementById("bar");
+	
+
+	window.TO_DEG = 180 / Math.PI;//Radians to degrees
+
+	//Set up loop controller 
+	Leap.loop({hand:function(hand){
+		var scalarproduct = Leap.vec3.dot(//Finding scalar product
+			hand.indexFinger.proximal.direction(),
+			hand.middleFinger.proximal.direction()
+		);
+		var angle = Math.acos(scalarproduct);//Find angle
+		degree.innerHTML = (angle*TO_DEG ).toPrecision(2)+" degrees";
+		bar.style.width = angle * 100 + '%';//Bar progress
+		}
+	     
+	});
+
+
+	//Adding the RiggedHand UI now
+	visualize = function(controller){
+	  
+	  controller.use('playback').on('riggedHand.meshAdded', function(handMesh, leapHand){
+		  handMesh.material.opacity = 1;
+	  });
+	  
+	 
+	  controller.use('riggedHand', {
+		scale: 1.3,
+		boneColors: function (boneMesh, leapHand){
+        if ((boneMesh.name.indexOf('Finger_1') == 0) ||(boneMesh.name.indexOf('Finger_2') == 0)) {
+          return {
+            hue: 0.564,
+            saturation: 1,
+            lightness: 0.5
+          }
+        }
+		}
+	  });
+	  
+    	var camera = controller.plugins.riggedHand.camera;
+    	camera.position.set(-8,8,20);
+    	camera.lookAt(new THREE.Vector3(0,0,0));
+	checkWebGL: true;
+	};
+	visualize(Leap.loopController);//Initialise the visualise function
+
+</script>
+</body>
