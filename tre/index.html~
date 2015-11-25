@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Tremor Detection</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/visualizer.css">
+	<link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+    <div id="app" class="show-hands">
+	<img src = "l.png" style = "width: 20%; height: 10%;margin-left: 38%; margin-top: 25%;"></img>
+		<div id="scene">
+	
+
+<div id="finger" class="cube finger">
+	<div class="face tp"></div>
+	<div class="face lt"></div>
+	<div class="face rt"></div>
+	<div class="face ft"></div>
+	<div class="face bk"></div>
+</div>
+<div id="sphere" class="cube sphere">
+	<div class="face tp"></div>
+	<div class="face lt"></div>
+	<div class="face rt"></div>
+	<div class="face ft"></div>
+	<div class="face bk"></div>
+</div>
+</div>
+</div>
+
+<div id="infoPanel">
+	<div class='well infoPanelContainer'>
+
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="introModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+
+				<h4 class="modal-title" align = "center">Tremors with Leap Motion</h4>
+			</div>
+			<div class="modal-body">
+				Welcome to Tremors with Leap Motion. Tremors with Leap motion will detect several attributes related to tremor in a hand like the velocity, acceleration, amplitude and frequency.
+				<br><br>
+				Click 'Begin' to start.
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-success beginRecording" style = "background-color: black; align: center;" data-dismiss="modal">Begin</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="resultsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Results</h4>
+				</div>
+				<div class="modal-body">
+					Results area
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default btn-success beginRecording" style = "background-color: black;" data-dismiss="modal" align = "center">Begin</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+	<script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+	<script src="js/LeapMotion/validFrame.js"></script>
+	<script src="js/LeapMotion/extractData.js"></script>
+	<script src="js/LeapMotion/colorPicker.js"></script>
+	<script src="js/LeapMotion/handDisplay.js"></script>
+
+	<script src="js/LeapMotion/analysisFunctions/_getAccelerationAverage.js"></script>
+	<script src="js/LeapMotion/analysisFunctions/_getAmplitudeAverage.js"></script>
+	<script src="js/LeapMotion/analysisFunctions/_getArrayAverage.js"></script>
+	<script src="js/LeapMotion/analysisFunctions/_getFrequencyAverage.js"></script>
+	<script src="js/LeapMotion/analysisFunctions/_getVelocityAverage.js"></script>
+	<script src="js/LeapMotion/analysisFunctions/_getEuclidean.js"></script>
+	<script src="js/LeapMotion/lmController.js"></script>
+
+	<script src="js/tremors.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+#infoPanel{
+	position:absolute;
+	right:20px;
+	height:70%;
+	top: 50px;
+	left: 10px;
+	z-index: 10;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box; /* Firefox */
+	padding:0px;
+	opacity:1;
+	border: none;
+}
+.well{
+	border: 1px solid black;
+}
+.infoPanelContainer{
+	background-color:rgba(255,255,255,0);
+	height: 80%;
+	width:300px;
+	padding:20px;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box; /* Firefox */
+	text-align: center;
+	border: 1px solid black;
+}
+.modal-backdrop, .modal-backdrop.fade.in {
+    opacity: 1;
+    background-color:white
+}
+#infoPanel h5{
+	margin-top:0;
+	padding-top:0;
+}
+
