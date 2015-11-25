@@ -1,0 +1,164 @@
+<html>
+<head>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
+  <script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+  <script src="lib/leap-plugins-0.1.11pre.js"></script>
+  <script src="//js.leapmotion.com/leap-widgets-0.1.0.js"></script>
+ 
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+
+</head>
+<body>
+
+</body>
+<script>
+	//Using Three.js by mr.doob
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+
+	//Refer documentations of three.js for further details!
+	var scene = new THREE.Scene();
+	var renderer = new THREE.WebGLRenderer();
+  	
+	//var camera = new THREE.PerspectiveCamera(20,width/height,1, 10000);
+	//camera.position.z = 1000;
+
+	//var geometry = new THREE.BoxGeometry(300,300,300);
+	//var material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true } );//Mesh with color and wireframe enabled
+	
+
+	document.body.appendChild(renderer.domElement);
+  	var camera = new THREE.PerspectiveCamera(20, width / height, 1, 10000);
+
+	//camera.position.set(-1018 * 0.9, 729 * 0.9, 613 * 0.9);
+  	//camera.rotation.set(-0.871653376, -0.8185568, -0.7150720);
+	camera.position.set(-1018 * 0.9, 500 * 0.9, 700 * 0.9);
+	camera.rotation.set(-0.871653376, -0.5, -0.7150720);
+  	camera.lookAt(new THREE.Vector3(0, 80, 0));	//Look at the point in vector3 tuple
+
+	renderer.setSize(width, height);//Setting size
+	renderer.shadowMapEnabled = true;//Enabling shadow
+	
+	var axis = new THREE.AxisHelper(250); //Setting up ref axes of length 50; X red, Y green, Z blue
+	scene.add(axis);
+
+	var light = new THREE.SpotLight(0xffffff,1); //Setting up light on projection
+	light.target.position.set( 0, 100, 0 );
+  	scene.add(light.target); 
+ 	light.castShadow = true;//Enable shadow
+ 	light.shadowDarkness = 1;//Strength of shadow
+
+//	camera.eulerOrder = "YXZ";
+
+	var light1 = new THREE.SpotLight(0xffffff,1); //Setting up light on projection
+	light1.target.position.set( 0, 100, 0);
+  	scene.add(light1.target); 
+ 	light1.castShadow = true;//Enable shadow
+ 	light1.shadowDarkness = 1;//Strength of shadow
+
+
+	var dolly = new THREE.Object3D;//Creating a 3D orientation on which light is put
+
+
+
+	//dolly.position.set(-800,60,50);
+	dolly.position.set(-800,60,100);
+
+	//dolly1
+	var dolly1 = new THREE.Object3D;//Creating a 3D orientation on which light is put
+	dolly1.position.set(800,60,600);
+
+  	scene.add(dolly);
+  	dolly.add(light);
+
+	scene.add(dolly1);
+  	dolly1.add(light1);
+	
+	//plane
+	var plane = new THREE.Mesh(		//Plane on which shadows will be projected
+    	new THREE.PlaneGeometry(120,120),
+    	new THREE.MeshPhongMaterial({wireframe: false})
+  	);
+
+	
+
+ 	plane.scale.multiplyScalar(3);
+  	plane.position.set(100,140,-60);//1st arg-red,2nd arg-greeen,3rd arg - blue
+  	plane.receiveShadow = true;
+
+
+  	camera.lookAt( plane.position );
+  	scene.add(plane);
+
+	//plane1
+	var geom = new THREE.PlaneGeometry(120,120);
+	geom.applyMatrix( new THREE.Matrix4().makeRotationY(  -Math.PI / 2 ) );
+	var material = new THREE.MeshPhongMaterial({wireframe: false})
+	var plane1 = new THREE.Mesh(geom, material);//Plane on which shadows will be proje
+
+	
+
+	plane1.scale.multiplyScalar(3);
+  	plane1.position.set(255,150,135);
+  	plane1.receiveShadow = true;
+
+
+  	camera.lookAt( plane1.position );
+  	scene.add(plane1);
+	
+
+	//plane2
+	var geom1 = new THREE.PlaneGeometry(120,120);
+	geom1.applyMatrix( new THREE.Matrix4().makeRotationX(-Math.PI/2 ) );
+	var material1 = new THREE.MeshPhongMaterial({wireframe: false})
+	var plane2 = new THREE.Mesh(geom1, material1);//Plane on which shadows will be proje
+
+	
+
+	plane2.scale.multiplyScalar(3);
+  	plane2.position.set(80,-30,135);
+  	plane2.receiveShadow = true;
+
+
+  	camera.lookAt( plane2.position );
+  	scene.add(plane2);
+	
+	
+
+	var box = new THREE.Mesh(	//the box to act as collision object for interaction along with collider
+    	new THREE.BoxGeometry(60,60,30), 
+    	new THREE.MeshPhongMaterial({color: 0xfff000})
+  	);
+
+  	box.castShadow = true;//Enable shadows
+  	box.receiveShadow = true;
+
+  	var collider = new THREE.Mesh(new THREE.PlaneGeometry(59,59));//Plane along which box created will be associated
+  	collider.position.set(0, 40, 40);	
+
+  	collider.add(box);
+  	scene.add(collider);
+
+
+
+	
+Leap.loop()					//Enabling the leap controller with bone and arm enabled
+    .use('boneHand', {
+      targetEl: document.body,
+      arm: true,
+      scene: scene,
+      render: function(){
+        renderer.render(scene, camera)
+      }
+    });
+
+  new InteractablePlane(collider, Leap.loopController,{moveX: true, moveY: true, moveZ: true}); //Refer docs. Leap interacts with collider object through this function
+
+</script>
+
+</html>
